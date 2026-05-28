@@ -1,4 +1,4 @@
-const Bank = require('../models/bankModel');
+const Bank = require('../models/Bank');
 const bcrypt = require('bcryptjs');
 // ADD BANK
 const addBank = async (req, res) => {

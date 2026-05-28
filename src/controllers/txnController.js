@@ -1,7 +1,7 @@
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
-const Bank = require("../models/bankModel");
+const Bank = require("../models/Bank");
 
 // @desc    Send money via Phone Number OR UPI ID
 // @route   POST /api/transactions/send
