@@ -1,45 +1,99 @@
 require('dotenv').config();
+
+console.log('1 SERVER START');
+
 const express = require('express');
+console.log('2 EXPRESS LOADED');
+
 const cors = require('cors');
-const connectDB = require('./src/config/db');
-const swaggerUi = require('swagger-ui-express');
+console.log('3 CORS LOADED');
 
-// Import routes
-const authRoutes = require('./src/routes/authRoutes');
-const txnRoutes = require('./src/routes/txnRoutes');
-const walletRoutes = require('./src/routes/walletRoutes'); // New Routes
-const bankRoutes = require('./src/routes/bankRoutes');
-const travelRoutes = require('./src/routes/travelRoutes');
+const swaggerUi =
+  require('swagger-ui-express');
+
+console.log('4 SWAGGER LOADED');
+
+const connectDB =
+  require('./src/config/db');
+
+console.log('5 DB FILE LOADED');
 
 
-let swaggerDocument = {};
-try {
-  swaggerDocument = require('./swagger-output.json');
-} catch (e) {
-  console.log("Swagger doc not generated yet. Run 'npm run swagger'");
-}
+// ROUTES
+const authRoutes =
+  require('./src/routes/authRoutes');
+
+console.log('6 AUTH ROUTE');
+
+const txnRoutes =
+  require('./src/routes/txnRoutes');
+
+console.log('7 TXN ROUTE');
+
+const walletRoutes =
+  require('./src/routes/walletRoutes');
+
+console.log('8 WALLET ROUTE');
+
+const bankRoutes =
+  require('./src/routes/bankRoutes');
+
+console.log('9 BANK ROUTE');
+
+const travelRoutes =
+  require('./src/routes/travelRoutes');
+
+console.log('10 TRAVEL ROUTE');
+
 
 const app = express();
+
+
+// CONNECT DB
 connectDB();
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+console.log('11 DB CONNECT FUNCTION CALLED');
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// MIDDLEWARE
+app.use(cors());
+
+app.use(express.json());
+
+app.use(express.urlencoded({
+  extended: true
+}));
+
 
 app.get('/', (req, res) => {
-  res.send('Easypay Backend is running...');
+
+  res.status(200).json({
+    status: true,
+    message:
+      'Backend Running'
+  });
+
 });
 
-// App Routes
+
+// ROUTES
 app.use('/api/auth', authRoutes);
+
 app.use('/api/transactions', txnRoutes);
-app.use('/api/wallet', walletRoutes); // Integrated Wallet Routes
-app.use("/api/bank", bankRoutes);
-app.use('/api/travel', travelRoutes)
-const PORT = process.env.PORT || 5000;
+
+app.use('/api/wallet', walletRoutes);
+
+app.use('/api/bank', bankRoutes);
+
+app.use('/api/travel', travelRoutes);
+
+
+const PORT =
+  process.env.PORT || 5000;
+
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Swagger Docs available at http://localhost:${PORT}/api-docs`);
+
+  console.log(
+    `12 SERVER RUNNING ${PORT}`
+  );
 });
