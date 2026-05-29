@@ -183,6 +183,107 @@ const dthRecharge = async (req, res) => {
   }
 };
 
+const waterBill = async (req, res) => {
+  try {
+    const { billerName, operator, consumerNumber, mobile_no, amount, mpin } = req.body;
+    const userId = req.user._id;
+    if (!mpin) {
+      return res.status(400).json({
+        message: 'MPIN is required'
+      });
+    }
+    const user = await User.findById(userId);
+    // Verify MPIN
+    if (!user.mpin) return res.status(400).json({
+      message: 'Please setup MPIN first'
+    });
+    const isMpinCorrect = await bcrypt.compare(mpin.toString(), user.mpin);
+    if (!isMpinCorrect)
+      return res.status(401).json({
+        message: 'Incorrect MPIN'
+      });
+    if (user.balance < amount) {
+      return res.status(400).json({
+        message: 'Insufficient wallet balance'
+      });
+    }
+
+    // Deduct Balance
+    user.balance -= amount;
+    await user.save();
+    const transaction = await Transaction.create({
+      sender: userId,
+      type: 'Water_Bill',
+      billerName: billerName || 'Unknown Utility',
+      consumerNumber: consumerNumber,
+      operator: operator,
+      mobile_no: mobile_no,
+      amount,
+      status: 'SUCCESS',
+    });
+    res.json({
+      message: `paid successfully for ${billerName}`,
+      balance: user.balance,
+      transaction
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+
+const insurancePayment = async (req, res) => {
+  try {
+    const { provider, policyNumber, name, mobile_no, amount, mpin } = req.body;
+    const userId = req.user._id;
+    if (!mpin) {
+      return res.status(400).json({
+        message: 'MPIN is required'
+      });
+    }
+    const user = await User.findById(userId);
+    // Verify MPIN
+    if (!user.mpin) return res.status(400).json({
+      message: 'Please setup MPIN first'
+    });
+    const isMpinCorrect = await bcrypt.compare(mpin.toString(), user.mpin);
+    if (!isMpinCorrect)
+      return res.status(401).json({
+        message: 'Incorrect MPIN'
+      });
+    if (user.balance < amount) {
+      return res.status(400).json({
+        message: 'Insufficient wallet balance'
+      });
+    }
+
+    // Deduct Balance
+    user.balance -= amount;
+    await user.save();
+    const transaction = await Transaction.create({
+      sender: userId,
+      type: 'Insurance',
+      name: name || 'Unknown Utility',
+      consumerNumber: policyNumber,
+      operator: provider,
+      mobile_no: mobile_no,
+      amount,
+      status: 'SUCCESS',
+    });
+    res.json({
+      message: `paid successfully for ${name}`,
+      balance: user.balance,
+      transaction
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+
+
 
 const userMpin = async (req, res) => {
   try {
@@ -367,4 +468,7 @@ const scanAnyQrTransfer = async (req, res) => {
 }
 
 
-module.exports = { addMoney, payBill, userMpin, verifyUpi, scanAnyQrTransfer, mobileRecService, dthRecharge };
+module.exports = {
+  addMoney, payBill, userMpin, verifyUpi, scanAnyQrTransfer,
+  mobileRecService, dthRecharge, waterBill, insurancePayment
+};

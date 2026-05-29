@@ -17,7 +17,7 @@ const transactionSchema = new mongoose.Schema(
       type: String,
       enum: [
         'TRANSFER', 'ADD_MONEY', 'WITHDRAW', 'BILL_PAY', 'Bank_Transfer', 'UPI_Transfer', 'Self_Transfer', 'debit',
-        'Mobile_Recharge', 'DTH_RECHARGE'
+        'Mobile_Recharge', 'DTH_RECHARGE', 'Water_Bill', 'Insurance'
       ],
       default: 'TRANSFER',
     },
